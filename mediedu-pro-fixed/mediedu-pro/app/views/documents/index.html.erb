@@ -1,0 +1,362 @@
+<% content_for :head do %>
+  <style>
+    .document-card {
+      transition: all 0.3s ease;
+    }
+    .document-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .filter-button.active {
+      background: linear-gradient(to right, #3b82f6, #6366f1);
+      color: white;
+    }
+    .upload-animation {
+      animation: bounceIn 0.6s ease-out;
+    }
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+<% end %>
+
+<!-- Header -->
+<div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div class="mb-6 md:mb-0">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">📚 문서 관리</h1>
+        <p class="text-xl text-blue-100 max-w-2xl">
+          병원의 SOP, 매뉴얼, 프로토콜을 업로드하고 관리하세요. AI가 자동으로 퀴즈를 생성해드립니다.
+        </p>
+      </div>
+      
+      <!-- Upload Button -->
+      <div class="flex-shrink-0">
+        <%= link_to new_document_path, 
+            class: "inline-flex items-center px-8 py-4 rounded-xl bg-white text-blue-600 font-bold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105" do %>
+          <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          새 문서 업로드
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters and Stats -->
+<div class="bg-white border-b border-gray-200 sticky top-16 z-30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+      
+      <!-- Category Filters -->
+      <div class="flex flex-wrap gap-2">
+        <%= link_to documents_path, 
+            class: "filter-button px-4 py-2 rounded-xl font-medium transition-all duration-200 #{'active' unless params[:category].present?} #{'bg-gray-100 text-gray-700 hover:bg-gray-200' if params[:category].present?}" do %>
+          전체
+        <% end %>
+        
+        <% Document.categories.keys.each do |category| %>
+          <%= link_to documents_path(category: category), 
+              class: "filter-button px-4 py-2 rounded-xl font-medium transition-all duration-200 #{params[:category] == category ? 'active' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
+            <%= category.humanize %>
+          <% end %>
+        <% end %>
+      </div>
+      
+      <!-- Search -->
+      <div class="relative">
+        <%= form_with url: documents_path, method: :get, local: true, class: "flex items-center" do |form| %>
+          <%= form.hidden_field :category, value: params[:category] if params[:category].present? %>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+            <%= form.text_field :search, 
+                placeholder: "문서 제목 검색...", 
+                value: params[:search],
+                class: "pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64" %>
+          </div>
+          <%= form.submit "검색", class: "ml-3 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200" %>
+        <% end %>
+      </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-blue-50 rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-blue-600"><%= @documents.count %></div>
+        <div class="text-sm text-gray-700 font-medium">총 문서</div>
+      </div>
+      <div class="bg-green-50 rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-green-600"><%= @documents.where(status: :published).count %></div>
+        <div class="text-sm text-gray-700 font-medium">게시됨</div>
+      </div>
+      <div class="bg-yellow-50 rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-yellow-600"><%= @documents.where(status: :draft).count %></div>
+        <div class="text-sm text-gray-700 font-medium">초안</div>
+      </div>
+      <div class="bg-purple-50 rounded-xl p-4 text-center">
+        <div class="text-2xl font-bold text-purple-600"><%= Quiz.joins(:document).where(documents: { id: @documents.pluck(:id) }).count %></div>
+        <div class="text-sm text-gray-700 font-medium">생성된 퀴즈</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Documents Grid -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <% if @documents.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @documents.each do |document| %>
+          <div class="document-card bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300">
+            <!-- Document Header -->
+            <div class="bg-gradient-to-r 
+                        <%= case document.category&.to_s
+                            when 'protocol' then 'from-blue-500 to-blue-600'
+                            when 'manual' then 'from-green-500 to-green-600'
+                            when 'sop' then 'from-purple-500 to-purple-600'
+                            when 'guideline' then 'from-orange-500 to-orange-600'
+                            else 'from-gray-500 to-gray-600'
+                            end %> p-6">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-2 mb-2">
+                    <span class="px-3 py-1 rounded-full bg-white bg-opacity-20 text-white text-xs font-medium">
+                      <%= document.category&.humanize || '기타' %>
+                    </span>
+                    <span class="px-3 py-1 rounded-full bg-white bg-opacity-20 text-white text-xs font-medium">
+                      <%= document.status&.humanize || '상태없음' %>
+                    </span>
+                  </div>
+                  <h3 class="text-lg font-bold text-white line-clamp-2 drop-shadow-sm">
+                    <%= document.title %>
+                  </h3>
+                </div>
+                
+                <!-- Document Icon -->
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center ml-4">
+                  <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Document Content -->
+            <div class="p-6">
+              <p class="text-gray-700 text-sm mb-4 line-clamp-3 leading-relaxed">
+                <%= truncate(strip_tags(document.content), length: 150) %>
+              </p>
+              
+              <!-- Document Meta -->
+              <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                <div class="flex items-center space-x-4">
+                  <span>📅 <%= document.created_at.strftime("%Y.%m.%d") %></span>
+                  <span>👤 <%= document.uploaded_by&.name || "시스템" %></span>
+                </div>
+              </div>
+              
+              <!-- Quiz Status -->
+              <div class="mb-4">
+                <% if document.quizzes.any? %>
+                  <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="text-green-800 font-semibold text-sm">퀴즈 준비 완료</div>
+                          <div class="text-green-600 text-xs"><%= document.quizzes.count %>개 퀴즈 • <%= document.quizzes.sum(&:question_count) %>문항</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-1">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-green-700 text-xs font-medium">사용가능</span>
+                      </div>
+                    </div>
+                  </div>
+                <% else %>
+                  <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200 border-dashed">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                          <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="text-purple-800 font-semibold text-sm">AI 퀴즈 생성 대기</div>
+                          <div class="text-purple-600 text-xs">클릭하여 퀴즈를 생성하세요</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center space-x-1">
+                        <div class="w-2 h-2 bg-purple-400 rounded-full"></div>
+                        <span class="text-purple-700 text-xs font-medium">대기중</span>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            
+            <!-- Document Actions -->
+            <div class="px-6 pb-6">
+              <div class="space-y-3">
+                <!-- Primary Action Button -->
+                <% if document.quizzes.any? %>
+                  <%= link_to quiz_path(document.quizzes.first), 
+                      class: "w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]" do %>
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                    </svg>
+                    퀴즈 시작하기
+                  <% end %>
+                <% else %>
+                  <%= link_to new_document_quiz_path(document), 
+                      class: "w-full inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-[1.02]" do %>
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    🤖 AI 퀴즈 생성
+                  <% end %>
+                <% end %>
+                
+                <!-- Secondary Actions -->
+                <div class="flex space-x-2">
+                  <%= link_to document_path(document), 
+                      class: "flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors duration-200" do %>
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <span class="text-sm">보기</span>
+                  <% end %>
+                  
+                  <% if document.quizzes.any? %>
+                    <%= link_to new_document_quiz_path(document), 
+                        class: "flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg bg-purple-100 text-purple-700 font-medium hover:bg-purple-200 transition-colors duration-200" do %>
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                      </svg>
+                      <span class="text-sm">추가생성</span>
+                    <% end %>
+                  <% end %>
+                  
+                  <button class="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg bg-blue-100 text-blue-700 font-medium hover:bg-blue-200 transition-colors duration-200"
+                          onclick="shareDocument('<%= document.title %>', '<%= document_url(document) %>')">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+                    </svg>
+                    <span class="text-sm">공유</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Pagination (if needed) -->
+      <div class="mt-12 text-center">
+        <button class="inline-flex items-center px-6 py-3 rounded-xl bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-200 shadow-lg">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          더 많은 문서 불러오기
+        </button>
+      </div>
+      
+    <% else %>
+      <!-- Empty State -->
+      <div class="text-center py-16">
+        <div class="upload-animation">
+          <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          
+          <h3 class="text-2xl font-bold text-gray-800 mb-4">
+            <% if params[:search].present? || params[:category].present? %>
+              검색 결과가 없습니다
+            <% else %>
+              아직 업로드된 문서가 없습니다
+            <% end %>
+          </h3>
+          
+          <p class="text-lg text-gray-700 mb-8 max-w-md mx-auto leading-relaxed">
+            <% if params[:search].present? || params[:category].present? %>
+              다른 키워드나 카테고리로 다시 검색해보세요.
+            <% else %>
+              병원의 SOP, 매뉴얼, 프로토콜을 업로드하여 AI 퀴즈를 생성해보세요.
+            <% end %>
+          </p>
+          
+          <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <% if params[:search].present? || params[:category].present? %>
+              <%= link_to documents_path, 
+                  class: "inline-flex items-center px-6 py-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold transition-colors duration-200" do %>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                전체 문서 보기
+              <% end %>
+            <% end %>
+            
+            <%= link_to new_document_path, 
+                class: "inline-flex items-center px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105" do %>
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+              첫 번째 문서 업로드하기
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  function shareDocument(title, url) {
+    if (navigator.share) {
+      navigator.share({
+        title: `MediEdu Pro - ${title}`,
+        text: `${title} 문서를 확인해보세요!`,
+        url: url
+      });
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(url).then(() => {
+        alert('문서 링크가 클립보드에 복사되었습니다!');
+      }).catch(() => {
+        // 클립보드 접근 실패시 간단한 알림
+        prompt('다음 링크를 복사하세요:', url);
+      });
+    }
+  }
+</script>

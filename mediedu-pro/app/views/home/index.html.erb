@@ -1,0 +1,356 @@
+<!-- Hero Section -->
+<div class="relative overflow-hidden">
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700"></div>
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="7" cy="7" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
+    <div class="text-center">
+      <!-- Floating elements -->
+      <div class="absolute top-10 left-10 w-20 h-20 bg-white bg-opacity-10 rounded-full animate-pulse hidden lg:block"></div>
+      <div class="absolute top-32 right-20 w-16 h-16 bg-white bg-opacity-10 rounded-full animate-pulse delay-300 hidden lg:block"></div>
+      <div class="absolute bottom-20 left-32 w-12 h-12 bg-white bg-opacity-10 rounded-full animate-pulse delay-500 hidden lg:block"></div>
+      
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-white bg-opacity-20 text-white text-sm font-medium mb-8 backdrop-blur-sm">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        </svg>
+        AI 기반 의료 교육의 새로운 표준
+      </div>
+      
+      <h1 class="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight">
+        <span class="block">의료진을 위한</span>
+        <span class="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+          스마트 교육
+        </span>
+      </h1>
+      
+      <p class="mt-6 text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+        AI가 생성하는 맞춤형 퀴즈로 의료진의 전문성을 향상시키고,<br>
+        게임화된 학습 경험으로 지속적인 성장을 지원합니다.
+      </p>
+      
+      <div class="mt-12 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+        <%= link_to quizzes_path, 
+            class: "group relative inline-flex items-center px-8 py-4 rounded-full bg-white text-blue-600 hover:bg-blue-50 text-lg font-semibold shadow-2xl transition-all duration-300 transform hover:scale-105" do %>
+          <svg class="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+          </svg>
+          퀴즈 시작하기
+        <% end %>
+        
+        <%= link_to documents_path, 
+            class: "inline-flex items-center px-8 py-4 rounded-full border-2 border-white text-white hover:bg-white hover:text-blue-600 text-lg font-semibold transition-all duration-300" do %>
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          문서 업로드
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-white py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">실시간 성과 현황</h2>
+      <p class="text-lg text-gray-600">MediEdu Pro가 만들어내는 학습 성과를 확인해보세요</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-blue-200">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600 bg-opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-300"></div>
+        <div class="relative">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <span class="text-blue-600 text-sm font-medium">+12% 이번 주</span>
+          </div>
+          <div class="text-4xl font-bold text-blue-600 mb-2"><%= @total_quizzes %></div>
+          <div class="text-gray-700 font-medium">총 퀴즈 수</div>
+          <div class="text-gray-500 text-sm mt-1">AI가 생성한 맞춤형 퀴즈</div>
+        </div>
+      </div>
+      
+      <div class="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-green-200">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-green-600 bg-opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-300"></div>
+        <div class="relative">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 001 1h6a1 1 0 001-1V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <span class="text-green-600 text-sm font-medium">+8% 이번 주</span>
+          </div>
+          <div class="text-4xl font-bold text-green-600 mb-2"><%= @total_documents %></div>
+          <div class="text-gray-700 font-medium">업로드된 문서</div>
+          <div class="text-gray-500 text-sm mt-1">의료 가이드라인 & 매뉴얼</div>
+        </div>
+      </div>
+      
+      <div class="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-purple-200">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600 bg-opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-300"></div>
+        <div class="relative">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+              </svg>
+            </div>
+            <span class="text-purple-600 text-sm font-medium">활발한 참여</span>
+          </div>
+          <div class="text-4xl font-bold text-purple-600 mb-2"><%= @demo_stats[:active_users] %></div>
+          <div class="text-gray-700 font-medium">활성 사용자</div>
+          <div class="text-gray-500 text-sm mt-1">지속적인 학습 참여자</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Additional metrics -->
+    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900"><%= @total_attempts %></div>
+        <div class="text-gray-600 text-sm">총 시도 횟수</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900"><%= number_with_precision(@average_score, precision: 1) %>%</div>
+        <div class="text-gray-600 text-sm">평균 점수</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900">1</div>
+        <div class="text-gray-600 text-sm">병원 수</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-gray-900">100%</div>
+        <div class="text-gray-600 text-sm">시스템 가동률</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Quizzes Section -->
+<div class="bg-gradient-to-b from-gray-50 to-white py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium mb-4">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+        </svg>
+        인기 퀴즈
+      </div>
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">최근 퀴즈</h2>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">AI가 생성한 의료 전문 퀴즈로 실력을 향상시켜보세요</p>
+    </div>
+    
+    <% if @recent_quizzes.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% @recent_quizzes.each_with_index do |quiz, index| %>
+          <div class="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+            <!-- Quiz rank badge -->
+            <div class="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-bold"><%= index + 1 %></span>
+            </div>
+            
+            <div class="flex justify-between items-start mb-6">
+              <h3 class="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+                <%= quiz.title %>
+              </h3>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold 
+                         <%= case quiz.difficulty
+                             when 'beginner' then 'bg-green-100 text-green-700 border border-green-200'
+                             when 'intermediate' then 'bg-yellow-100 text-yellow-700 border border-yellow-200'  
+                             when 'advanced' then 'bg-red-100 text-red-700 border border-red-200'
+                             else 'bg-blue-100 text-blue-700 border border-blue-200'
+                             end %>">
+                <%= quiz.difficulty&.humanize || '기본' %>
+              </span>
+            </div>
+            
+            <p class="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
+              <%= quiz.description %>
+            </p>
+            
+            <div class="flex justify-between items-center mb-6 text-sm">
+              <div class="flex items-center text-gray-500">
+                <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="font-medium"><%= JSON.parse(quiz.questions_data).length %> 문항</span>
+              </div>
+              
+              <div class="flex items-center text-gray-500">
+                <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                </svg>
+                <span class="font-medium"><%= quiz.document.category.humanize %></span>
+              </div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+              <%= link_to quiz_path(quiz), 
+                  class: "group inline-flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+                <span>시작하기</span>
+                <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+                </svg>
+              <% end %>
+              
+              <div class="text-right">
+                <div class="text-sm font-semibold text-gray-900"><%= quiz.quiz_attempts.count %></div>
+                <div class="text-xs text-gray-500">도전자</div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <div class="text-center mt-16">
+        <%= link_to quizzes_path, 
+            class: "inline-flex items-center px-8 py-4 rounded-full bg-gray-900 text-white font-semibold hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+          <span>모든 퀴즈 보기</span>
+          <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+          </svg>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">아직 퀴즈가 없습니다</h3>
+        <p class="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+          의료 문서를 업로드하면 AI가 자동으로 맞춤형 퀴즈를 생성해드립니다.
+        </p>
+        <%= link_to new_document_path, 
+            class: "inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>첫 문서 업로드하기</span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="relative bg-gray-900 py-20 overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900"></div>
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="7" cy="7" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center px-4 py-2 rounded-full bg-white bg-opacity-10 text-blue-300 text-sm font-medium mb-6 backdrop-blur-sm">
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+        </svg>
+        혁신적인 기능들
+      </div>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+        의료 교육의 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">새로운 차원</span>
+      </h2>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        AI 기술과 게임화 요소를 결합하여 의료진의 학습 경험을 혁신적으로 변화시킵니다
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- AI 퀴즈 생성 -->
+      <div class="group relative bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-8 border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800 opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
+        <div class="relative">
+          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors duration-200">AI 퀴즈 생성</h3>
+          <p class="text-gray-300 leading-relaxed mb-6">
+            첨단 AI 기술로 의료 문서를 분석하여 맞춤형 퀴즈를 자동 생성합니다. 복잡한 의료 지식을 효과적으로 학습할 수 있도록 도와줍니다.
+          </p>
+          <div class="flex items-center text-blue-400 text-sm font-medium">
+            <span>자세히 보기</span>
+            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 게임화 학습 -->
+      <div class="group relative bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-8 border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-green-600 to-green-800 opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
+        <div class="relative">
+          <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-green-300 transition-colors duration-200">게임화 학습</h3>
+          <p class="text-gray-300 leading-relaxed mb-6">
+            포인트, 뱃지, 리더보드 시스템으로 학습 동기를 증진시킵니다. 경쟁과 성취감을 통해 지속적인 학습을 유도합니다.
+          </p>
+          <div class="flex items-center text-green-400 text-sm font-medium">
+            <span>자세히 보기</span>
+            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 성과 분석 -->
+      <div class="group relative bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-8 border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-800 opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
+        <div class="relative">
+          <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors duration-200">성과 분석</h3>
+          <p class="text-gray-300 leading-relaxed mb-6">
+            개인별, 부서별 학습 성과를 실시간으로 분석하고 시각화합니다. 데이터 기반의 학습 개선 방안을 제공합니다.
+          </p>
+          <div class="flex items-center text-purple-400 text-sm font-medium">
+            <span>자세히 보기</span>
+            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CTA Section -->
+    <div class="text-center mt-16">
+      <div class="bg-white bg-opacity-5 backdrop-blur-sm rounded-2xl p-8 border border-white border-opacity-10">
+        <h3 class="text-2xl font-bold text-white mb-4">지금 바로 시작하세요</h3>
+        <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
+          MediEdu Pro와 함께 의료진 교육의 새로운 차원을 경험해보세요
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <%= link_to quizzes_path, 
+              class: "inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl" do %>
+            무료 체험하기
+          <% end %>
+          <%= link_to documents_path, 
+              class: "inline-flex items-center px-8 py-4 rounded-full border-2 border-white text-white hover:bg-white hover:text-gray-900 font-semibold transition-all duration-200" do %>
+            문서 업로드
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

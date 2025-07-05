@@ -1,0 +1,317 @@
+<% content_for :head do %>
+  <style>
+    .ai-animation {
+      animation: pulse 2s infinite;
+    }
+    .generation-process {
+      animation: slideInUp 0.6s ease-out;
+    }
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .ai-brain {
+      animation: brainPulse 3s ease-in-out infinite;
+    }
+    @keyframes brainPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.5s infinite;
+    }
+    @keyframes dots {
+      0%, 33% { content: ''; }
+      34%, 66% { content: '.'; }
+      67%, 99% { content: '..'; }
+      100% { content: '...'; }
+    }
+  </style>
+<% end %>
+
+<!-- Header -->
+<div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center">
+      <div class="ai-brain w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+        <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">🤖 AI 퀴즈 생성</h1>
+      <p class="text-xl text-purple-100 max-w-2xl mx-auto">
+        인공지능이 "<%= @document.title %>" 문서를 분석하여 맞춤형 퀴즈를 생성합니다
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Generation Form -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 py-12">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <%= form_with model: [@document, @quiz], local: true, 
+                  class: "generation-process", 
+                  data: { turbo: false } do |form| %>
+      
+      <!-- Document Preview Card -->
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r 
+                    <%= case @document.category&.to_s
+                        when 'protocol' then 'from-blue-500 to-blue-600'
+                        when 'manual' then 'from-green-500 to-green-600'
+                        when 'sop' then 'from-purple-500 to-purple-600'
+                        when 'guideline' then 'from-orange-500 to-orange-600'
+                        else 'from-gray-500 to-gray-600'
+                        end %> px-8 py-6">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+            </svg>
+            분석 대상 문서
+          </h2>
+        </div>
+        
+        <div class="p-8">
+          <div class="flex items-start space-x-4 mb-6">
+            <div class="flex-shrink-0">
+              <div class="w-16 h-16 bg-gradient-to-r 
+                          <%= case @document.category&.to_s
+                              when 'protocol' then 'from-blue-500 to-blue-600'
+                              when 'manual' then 'from-green-500 to-green-600'
+                              when 'sop' then 'from-purple-500 to-purple-600'
+                              when 'guideline' then 'from-orange-500 to-orange-600'
+                              else 'from-gray-500 to-gray-600'
+                              end %> rounded-xl flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-800 mb-2"><%= @document.title %></h3>
+              <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">
+                  <%= @document.category&.humanize || '기타' %>
+                </span>
+                <span>📅 <%= @document.created_at.strftime("%Y.%m.%d") %></span>
+                <span>📊 <%= number_with_delimiter(@document.content.length) %>자</span>
+              </div>
+              <p class="text-gray-700 line-clamp-3">
+                <%= truncate(strip_tags(@document.content), length: 200) %>
+              </p>
+            </div>
+          </div>
+          
+          <!-- AI Analysis Preview -->
+          <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200">
+            <h4 class="font-semibold text-purple-900 mb-3 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              AI 분석 미리보기
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600"><%= [((@document.content.length / 200.0).ceil), 10].min %>개</div>
+                <div class="text-gray-600">예상 문항 수</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600"><%= [((@document.content.length / 200.0).ceil * 2), 20].min %>분</div>
+                <div class="text-gray-600">예상 소요 시간</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">혼합</div>
+                <div class="text-gray-600">문제 유형</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quiz Configuration -->
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            퀴즈 설정
+          </h2>
+        </div>
+        
+        <div class="p-8 space-y-6">
+          
+          <!-- Quiz Title -->
+          <div>
+            <%= form.label :title, "퀴즈 제목", class: "block text-lg font-semibold text-gray-800 mb-3" %>
+            <%= form.text_field :title, 
+                value: "#{@document.title} - AI 생성 퀴즈",
+                placeholder: "퀴즈 제목을 입력하세요",
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-lg transition-all duration-200",
+                required: true %>
+          </div>
+          
+          <!-- Quiz Description -->
+          <div>
+            <%= form.label :description, "퀴즈 설명", class: "block text-lg font-semibold text-gray-800 mb-3" %>
+            <%= form.text_area :description, 
+                placeholder: "이 퀴즈에 대한 간단한 설명을 입력하세요...",
+                rows: 3,
+                class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none transition-all duration-200" %>
+          </div>
+          
+          <!-- Difficulty Level -->
+          <div>
+            <%= form.label :difficulty, "난이도 설정", class: "block text-lg font-semibold text-gray-800 mb-3" %>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <% Quiz.difficulties.each do |key, value| %>
+                <label class="relative cursor-pointer">
+                  <%= form.radio_button :difficulty, key, 
+                      class: "sr-only peer",
+                      checked: key == 'intermediate' %>
+                  <div class="peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-indigo-500 peer-checked:text-white
+                             bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 peer-checked:border-transparent
+                             rounded-xl p-4 text-center transition-all duration-300 ease-out
+                             peer-checked:shadow-lg peer-checked:scale-105">
+                    <div class="font-semibold mb-2">
+                      <%= case key
+                          when 'beginner' then '🌱 초급'
+                          when 'intermediate' then '🎯 중급'
+                          when 'advanced' then '🔥 고급'
+                          else key.humanize
+                          end %>
+                    </div>
+                    <div class="text-sm opacity-75">
+                      <%= case key
+                          when 'beginner' then '기본 개념 위주'
+                          when 'intermediate' then '실무 적용 문제'
+                          when 'advanced' then '심화 응용 문제'
+                          else '표준 난이도'
+                          end %>
+                    </div>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+      <!-- AI Generation Process -->
+      <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-6">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <svg class="w-6 h-6 mr-3 ai-animation" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            AI 생성 과정
+          </h2>
+        </div>
+        
+        <div class="p-8">
+          <div class="space-y-4">
+            <div class="flex items-center space-x-4 p-4 bg-green-50 rounded-xl border border-green-200">
+              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold text-sm">1</span>
+              </div>
+              <div>
+                <div class="font-semibold text-green-900">문서 내용 분석</div>
+                <div class="text-sm text-green-700">AI가 문서의 핵심 내용과 구조를 파악합니다</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold text-sm">2</span>
+              </div>
+              <div>
+                <div class="font-semibold text-blue-900">문제 유형 결정</div>
+                <div class="text-sm text-blue-700">객관식, 참/거짓 등 적절한 문제 유형을 선택합니다</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 p-4 bg-purple-50 rounded-xl border border-purple-200">
+              <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold text-sm">3</span>
+              </div>
+              <div>
+                <div class="font-semibold text-purple-900">문제 및 선택지 생성</div>
+                <div class="text-sm text-purple-700">난이도에 맞는 문제와 정답, 오답을 생성합니다</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 p-4 bg-orange-50 rounded-xl border border-orange-200">
+              <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                <span class="text-white font-bold text-sm">4</span>
+              </div>
+              <div>
+                <div class="font-semibold text-orange-900">품질 검증 및 최적화</div>
+                <div class="text-sm text-orange-700">생성된 문제의 품질을 검토하고 최적화합니다</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <%= link_to document_path(@document), 
+            class: "inline-flex items-center px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 font-semibold transition-all duration-200" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          취소
+        <% end %>
+        
+        <%= form.submit "🤖 AI 퀴즈 생성하기", 
+            class: "inline-flex items-center px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105",
+            data: { 
+              disable_with: '<span class="loading-dots">AI가 퀴즈를 생성하고 있습니다</span>',
+              confirm: "AI가 문서를 분석하여 퀴즈를 생성합니다. 계속하시겠습니까?"
+            } %>
+      </div>
+      
+    <% end %>
+    
+    <!-- AI Information -->
+    <div class="mt-12 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-200">
+      <h3 class="text-xl font-bold text-indigo-900 mb-4 flex items-center">
+        <svg class="w-6 h-6 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+        </svg>
+        AI 퀴즈 생성 정보
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+        <div>
+          <h4 class="font-semibold text-indigo-900 mb-2">생성 시간</h4>
+          <ul class="text-indigo-700 space-y-1">
+            <li>• 짧은 문서: 약 30초</li>
+            <li>• 중간 문서: 약 1-2분</li>
+            <li>• 긴 문서: 약 2-5분</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-indigo-900 mb-2">문제 특징</h4>
+          <ul class="text-indigo-700 space-y-1">
+            <li>• 문서 내용 기반 문제</li>
+            <li>• 다양한 문제 유형</li>
+            <li>• 난이도별 맞춤 구성</li>
+            <li>• 즉시 사용 가능</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

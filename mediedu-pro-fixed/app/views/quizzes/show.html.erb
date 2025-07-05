@@ -1,0 +1,404 @@
+<% content_for :head do %>
+  <style>
+    .quiz-timer {
+      animation: pulse 2s infinite;
+    }
+    .question-fade-in {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .option-hover:hover {
+      transform: translateX(8px);
+    }
+  </style>
+<% end %>
+
+<!-- Quiz Header -->
+<div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white sticky top-16 z-40 shadow-lg">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center justify-between">
+      <!-- Quiz Info -->
+      <div class="flex items-center space-x-4">
+        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold truncate max-w-md"><%= @quiz.title %></h1>
+          <p class="text-indigo-100 text-sm">
+            <span class="px-2 py-1 rounded-full bg-white bg-opacity-20 text-xs font-medium">
+              <%= @quiz.difficulty&.humanize || '기본' %>
+            </span>
+            · <%= @quiz.document.category.humanize %>
+          </p>
+        </div>
+      </div>
+      
+      <!-- Progress & Timer -->
+      <div class="flex items-center space-x-6">
+        <!-- Progress -->
+        <div class="hidden sm:flex items-center space-x-2">
+          <div class="text-right">
+            <div class="text-lg font-bold"><%= @current_question %>/<%= @total_questions %></div>
+            <div class="text-indigo-200 text-xs">문제</div>
+          </div>
+          <div class="w-20 bg-white bg-opacity-20 rounded-full h-2">
+            <div class="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all duration-500" 
+                 style="width: <%= (@current_question.to_f / @total_questions * 100).round(1) %>%"></div>
+          </div>
+        </div>
+        
+        <!-- Timer -->
+        <div class="quiz-timer bg-white bg-opacity-20 rounded-xl px-3 py-2 backdrop-blur-sm">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+              <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+            </svg>
+            <span class="font-mono text-sm font-bold" id="timer">00:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Progress -->
+    <div class="sm:hidden mt-3">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium">진행률</span>
+        <span class="text-sm font-bold"><%= @current_question %>/<%= @total_questions %> 문제</span>
+      </div>
+      <div class="w-full bg-white bg-opacity-20 rounded-full h-2">
+        <div class="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all duration-500" 
+             style="width: <%= (@current_question.to_f / @total_questions * 100).round(1) %>%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Content -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <% if @question %>
+      <!-- Question Card -->
+      <div class="question-fade-in bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden mb-8">
+        <!-- Question Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <span class="text-white font-bold text-sm">Q<%= @current_question %></span>
+              </div>
+              <span class="text-white text-sm font-medium">
+                <%= @question['type'] == 'multiple_choice' ? '객관식' : '참/거짓' %>
+              </span>
+            </div>
+            <div class="text-white text-sm">
+              <span class="font-medium">배점:</span> 
+              <span class="font-bold"><%= (100.0 / @total_questions).round(1) %>점</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Question Content -->
+        <div class="p-8">
+          <div class="mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 leading-relaxed mb-4">
+              <%= @question['question'] %>
+            </h2>
+            <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+          </div>
+          
+          <!-- Options Form -->
+          <%= form_with url: next_question_quiz_path(@quiz), method: :patch, local: true, 
+                        class: "space-y-4", id: "quiz-form", 
+                        data: { question: @current_question } do |form| %>
+            
+            <%= hidden_field_tag "question_number", @current_question %>
+            <%= hidden_field_tag "time_spent", 0, id: "time_spent" %>
+            
+            <% @question['options'].each_with_index do |option, index| %>
+              <label class="option-hover group relative block cursor-pointer">
+                <input type="radio" 
+                       name="answer" 
+                       value="<%= index %>" 
+                       class="sr-only peer"
+                       id="option_<%= index %>">
+                
+                <div class="peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-500 peer-checked:text-white
+                           peer-checked:shadow-lg peer-checked:scale-[1.02]
+                           bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 peer-checked:border-transparent
+                           rounded-2xl p-6 transition-all duration-300 ease-out">
+                  <div class="flex items-center space-x-4">
+                    <!-- Option Letter -->
+                    <div class="w-10 h-10 rounded-full border-2 border-gray-300 peer-checked:border-white 
+                                bg-white peer-checked:bg-white peer-checked:bg-opacity-20
+                                flex items-center justify-center font-bold text-gray-600 peer-checked:text-white
+                                transition-all duration-300">
+                      <%= ('A'.ord + index).chr %>
+                    </div>
+                    
+                    <!-- Option Text -->
+                    <span class="text-lg font-medium text-gray-800 peer-checked:text-white transition-colors duration-300">
+                      <%= option %>
+                    </span>
+                    
+                    <!-- Check Icon -->
+                    <div class="ml-auto opacity-0 peer-checked:opacity-100 transition-opacity duration-300">
+                      <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            <% end %>
+            
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 pt-8 border-t border-gray-200">
+              <!-- Previous Button -->
+              <% if @current_question > 1 %>
+                <%= link_to quiz_path(@quiz, question_number: @current_question - 1), 
+                    class: "inline-flex items-center px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 font-medium transition-all duration-200" do %>
+                  <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
+                  </svg>
+                  이전 문제
+                <% end %>
+              <% else %>
+                <div></div>
+              <% end %>
+              
+              <!-- Next/Submit Button -->
+              <% if @current_question < @total_questions %>
+                <button type="submit" 
+                        class="inline-flex items-center px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        onclick="saveAnswer()">
+                  <span>다음 문제</span>
+                  <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/>
+                  </svg>
+                </button>
+              <% else %>
+                <button type="submit" 
+                        class="inline-flex items-center px-8 py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        onclick="submitQuiz()">
+                  <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span>퀴즈 완료</span>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+    <% else %>
+      <!-- No Question State -->
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">문제를 불러올 수 없습니다</h3>
+        <p class="text-lg text-gray-600 mb-8">퀴즈 데이터에 문제가 있습니다. 다시 시도해주세요.</p>
+        <%= link_to quizzes_path, 
+            class: "inline-flex items-center px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-200" do %>
+          퀴즈 목록으로 돌아가기
+        <% end %>
+      </div>
+    <% end %>
+    
+    <!-- Quiz Info Panel -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+      <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+        </svg>
+        퀴즈 정보
+      </h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <div class="text-2xl font-bold text-blue-600"><%= @total_questions %></div>
+          <div class="text-sm text-gray-600">총 문항</div>
+        </div>
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <div class="text-2xl font-bold text-green-600"><%= (@total_questions * 2) %></div>
+          <div class="text-sm text-gray-600">예상 시간(분)</div>
+        </div>
+        <div class="text-center p-3 bg-purple-50 rounded-lg">
+          <div class="text-2xl font-bold text-purple-600">100</div>
+          <div class="text-sm text-gray-600">만점</div>
+        </div>
+        <div class="text-center p-3 bg-orange-50 rounded-lg">
+          <div class="text-2xl font-bold text-orange-600"><%= @quiz.quiz_attempts.count %></div>
+          <div class="text-sm text-gray-600">도전자</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="text-center">
+      <%= link_to quizzes_path, 
+          class: "inline-flex items-center px-6 py-3 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition-all duration-200" do %>
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
+        </svg>
+        퀴즈 목록으로 돌아가기
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Timer functionality
+  let startTime = Date.now();
+  let timerInterval;
+  
+  function updateTimer() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    document.getElementById('timer').textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    // Update hidden field
+    document.getElementById('time_spent').value = elapsed;
+  }
+  
+  function startTimer() {
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+  
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+  }
+  
+  // Auto-save answers to localStorage
+  function saveAnswer() {
+    const form = document.getElementById('quiz-form');
+    const formData = new FormData(form);
+    const answer = formData.get('answer');
+    const questionNumber = formData.get('question_number');
+    
+    if (answer !== null) {
+      let answers = JSON.parse(localStorage.getItem('quiz_<%= @quiz.id %>_answers') || '{}');
+      answers[questionNumber] = answer;
+      localStorage.setItem('quiz_<%= @quiz.id %>_answers', JSON.stringify(answers));
+    }
+  }
+  
+  function submitQuiz() {
+    saveAnswer();
+    stopTimer();
+    
+    // Get all saved answers from localStorage
+    const answers = JSON.parse(localStorage.getItem('quiz_<%= @quiz.id %>_answers') || '{}');
+    const form = document.getElementById('quiz-form');
+    
+    // Clear existing hidden fields (except question_number and time_spent)
+    const existingHiddenFields = form.querySelectorAll('input[type="hidden"]:not([name="question_number"]):not([name="time_spent"])');
+    existingHiddenFields.forEach(field => field.remove());
+    
+    // Add all saved answers to form
+    Object.keys(answers).forEach(questionNumber => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = `answers[${questionNumber}]`;
+      input.value = answers[questionNumber];
+      form.appendChild(input);
+    });
+    
+    // Add current answer if not already saved
+    const currentAnswer = form.querySelector('input[name="answer"]:checked');
+    if (currentAnswer) {
+      const currentQuestionNumber = '<%= @current_question %>';
+      if (!answers[currentQuestionNumber]) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `answers[${currentQuestionNumber}]`;
+        input.value = currentAnswer.value;
+        form.appendChild(input);
+      }
+    }
+    
+    // Add method override for PATCH request
+    const methodInput = document.createElement('input');
+    methodInput.type = 'hidden';
+    methodInput.name = '_method';
+    methodInput.value = 'patch';
+    form.appendChild(methodInput);
+    
+    // Clear localStorage
+    localStorage.removeItem('quiz_<%= @quiz.id %>_answers');
+    
+    // Submit form to attempt action
+    form.action = '<%= attempt_quiz_path(@quiz) %>';
+    form.method = 'POST';
+    form.submit();
+  }
+  
+  // Load saved answer if exists
+  function loadSavedAnswer() {
+    const answers = JSON.parse(localStorage.getItem('quiz_<%= @quiz.id %>_answers') || '{}');
+    const currentAnswer = answers['<%= @current_question %>'];
+    
+    if (currentAnswer !== undefined) {
+      const option = document.getElementById(`option_${currentAnswer}`);
+      if (option) {
+        option.checked = true;
+      }
+    }
+  }
+  
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    startTimer();
+    loadSavedAnswer();
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key >= '1' && e.key <= '4') {
+        const optionIndex = parseInt(e.key) - 1;
+        const option = document.getElementById(`option_${optionIndex}`);
+        if (option) {
+          option.checked = true;
+        }
+      }
+      
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const form = document.getElementById('quiz-form');
+        if (form) {
+          <% if @current_question < @total_questions %>
+            saveAnswer();
+            form.submit();
+          <% else %>
+            submitQuiz();
+          <% end %>
+        }
+      }
+    });
+  });
+  
+  // Prevent accidental page refresh
+  window.addEventListener('beforeunload', function(e) {
+    saveAnswer();
+    e.preventDefault();
+    e.returnValue = '';
+  });
+</script>
