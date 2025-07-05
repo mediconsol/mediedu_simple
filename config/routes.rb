@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
+  get "health" => "rails/health#show"
 
   # PWA routes (optional)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
