@@ -2,13 +2,20 @@
 nixPkgs = ['nodejs', 'python3']
 
 [phases.install]
-cmds = ['bundle install']
+cmds = [
+  'echo "=== Installing Ruby dependencies ==="',
+  'bundle install'
+]
 
 [phases.build]
 cmds = [
+  'echo "=== Setting Rails environment ==="',
+  'export RAILS_ENV=production',
+  'echo "=== Precompiling assets ==="',
   'bundle exec rails assets:precompile',
-  'bundle exec rails assets:clean'
+  'bundle exec rails assets:clean',
+  'echo "=== Build completed ==="'
 ]
 
 [start]
-cmd = 'bundle exec puma -C config/puma.rb'
+cmd = 'bundle exec rails db:prepare && bundle exec puma -C config/puma.rb'
