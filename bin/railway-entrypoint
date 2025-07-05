@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+
+echo "Starting Railway deployment..."
+
+# Create database if it doesn't exist
+echo "Setting up database..."
+bundle exec rails db:prepare
+
+# Precompile assets if needed
+echo "Precompiling assets..."
+bundle exec rails assets:precompile
+
+echo "Starting Rails server..."
+exec "$@"
