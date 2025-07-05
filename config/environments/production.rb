@@ -80,11 +80,8 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # Allow Render.com hosts
-  config.hosts = [
-    "mediedu-pro.onrender.com",
-    /.*\.onrender\.com/
-  ]
+  # Allow all hosts for Render.com deployment
+  config.hosts = nil
   
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
