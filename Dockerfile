@@ -69,4 +69,9 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server on port 3000 for cloud deployment compatibility
 EXPOSE 3000
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-3000}/up || exit 1
+
 CMD ["./bin/rails", "server"]
