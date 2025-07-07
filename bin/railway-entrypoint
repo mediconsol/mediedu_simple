@@ -4,6 +4,14 @@ set -e
 echo "=== Railway Deployment Started ==="
 echo "RAILS_ENV: $RAILS_ENV"
 echo "PORT: $PORT"
+echo "HOST: 0.0.0.0"
+
+# 포트 확인
+if [ -z "$PORT" ]; then
+  echo "❌ PORT environment variable not set!"
+  export PORT=3000
+  echo "Using default PORT: $PORT"
+fi
 
 # 데이터베이스 설정
 if [ -n "$DATABASE_URL" ]; then
@@ -22,5 +30,5 @@ else
   echo "Using SQLite database..."
 fi
 
-echo "Starting Rails server..."
+echo "Starting server on 0.0.0.0:$PORT..."
 exec "$@"

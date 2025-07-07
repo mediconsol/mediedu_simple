@@ -28,11 +28,26 @@ threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests
-# Fly.io sets PORT env var, fallback to 3000 for local development
+# Railway sets PORT env var, fallback to 3000 for local development
 port ENV.fetch("PORT", 3000)
 
-# Bind to all interfaces for containerized environments
+# Bind to all interfaces for containerized environments (Railway/Fly.io/Docker)
 bind "tcp://0.0.0.0:#{ENV.fetch("PORT", 3000)}"
+
+# Environment
+environment ENV.fetch("RAILS_ENV", "development")
+
+# Railway/Cloud deployment optimizations
+if ENV["RAILWAY_ENVIRONMENT"] || ENV["RAILS_ENV"] == "production"
+  # Preload app for better memory usage
+  preload_app!
+  
+  # Worker timeout
+  worker_timeout 30
+  
+  # Shutdown timeout
+  worker_shutdown_timeout 30
+end
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
