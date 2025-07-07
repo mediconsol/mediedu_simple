@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   
   # Simple ping endpoint for Railway
   get "ping", to: proc { [200, {}, ["pong"]] }
+  get "hello", to: proc { [200, {}, ["Hello Railway! Rails is running on port #{ENV['PORT'] || 3000}"]] }
 
   # PWA routes (optional)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

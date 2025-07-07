@@ -39,11 +39,8 @@ environment ENV.fetch("RAILS_ENV", "development")
 
 # Railway/Cloud deployment optimizations
 if ENV["RAILWAY_ENVIRONMENT"] || ENV["RAILS_ENV"] == "production"
-  # Preload app for better memory usage
-  preload_app!
-  
   # Worker timeout
-  worker_timeout 30
+  worker_timeout 60
   
   # Shutdown timeout
   worker_shutdown_timeout 30

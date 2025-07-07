@@ -23,7 +23,7 @@ test:
 
 # Production environment - Use PostgreSQL in cloud, SQLite3 locally
 production:
-  <% if ENV['DATABASE_URL'].present? %>
+  <% if ENV['DATABASE_URL'].present? && ENV['DATABASE_URL'] != '' %>
   primary:
     url: <%= ENV['DATABASE_URL'] %>
     adapter: postgresql
