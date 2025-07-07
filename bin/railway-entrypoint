@@ -1,20 +1,26 @@
-#\!/bin/bash
+#!/bin/bash
 set -e
 
-# 데이터베이스 준비
-echo "Setting up database..."
-bundle exec rails db:prepare
+echo "=== Railway Deployment Started ==="
+echo "DATABASE_URL: ${DATABASE_URL:0:30}..." # 보안상 일부만 출력
+echo "RAILS_ENV: $RAILS_ENV"
 
-# 애셋 프리컴파일 (이미 되어있지 않다면)
-if [ \! -f public/assets/.sprockets-manifest-*.json ]; then
-  echo "Precompiling assets..."
-  bundle exec rails assets:precompile
+# 데이터베이스 연결 테스트
+echo "Testing database connection..."
+if bundle exec rails runner "ActiveRecord::Base.connection.execute('SELECT 1')" 2>/dev/null; then
+  echo "✅ Database connection successful"
+else
+  echo "❌ Database connection failed - attempting to create database..."
+  bundle exec rails db:create || echo "Database creation failed or already exists"
 fi
 
-# 시드 데이터 (필요시)
-echo "Loading seed data..."
-bundle exec rails db:seed
+# 데이터베이스 마이그레이션
+echo "Running database migrations..."
+bundle exec rails db:migrate
 
-echo "Starting Rails server..."
+# 시드 데이터 (안전하게)
+echo "Loading seed data..."
+bundle exec rails db:seed || echo "Seed data loading failed or already exists"
+
+echo "=== Starting Rails server ==="
 exec "$@"
-EOF < /dev/null
