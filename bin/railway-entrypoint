@@ -18,14 +18,14 @@ if [ -n "$DATABASE_URL" ]; then
   echo "Setting up PostgreSQL database..."
   
   # 간단한 DB 준비
-  rails db:prepare || {
+  bundle exec rails db:prepare || {
     echo "DB prepare failed, trying create and migrate..."
-    rails db:create || true
-    rails db:migrate || true
+    bundle exec rails db:create || true
+    bundle exec rails db:migrate || true
   }
   
   # 시드 데이터
-  rails db:seed || echo "Seed loading skipped"
+  bundle exec rails db:seed || echo "Seed loading skipped"
 else
   echo "Using SQLite database..."
 fi

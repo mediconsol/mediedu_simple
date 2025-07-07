@@ -11,6 +11,3 @@ cmds = ["bundle install --without development test"]
 cmds = [
   "bundle exec rails assets:precompile"
 ]
-
-[phases.start]
-cmd = "./bin/railway-entrypoint rails server -b 0.0.0.0 -p $PORT -e production"
