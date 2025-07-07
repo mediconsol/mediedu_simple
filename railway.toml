@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "./bin/railway-entrypoint ./bin/rails server"
+startCommand = "./bin/railway-entrypoint rails server -p $PORT -e production"
 healthcheckPath = "/up"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"

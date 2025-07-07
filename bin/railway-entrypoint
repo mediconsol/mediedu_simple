@@ -1,15 +1,20 @@
-#!/bin/bash
+#\!/bin/bash
 set -e
 
-echo "Starting Railway deployment..."
-
-# Create database if it doesn't exist
+# 데이터베이스 준비
 echo "Setting up database..."
 bundle exec rails db:prepare
 
-# Precompile assets if needed
-echo "Precompiling assets..."
-bundle exec rails assets:precompile
+# 애셋 프리컴파일 (이미 되어있지 않다면)
+if [ \! -f public/assets/.sprockets-manifest-*.json ]; then
+  echo "Precompiling assets..."
+  bundle exec rails assets:precompile
+fi
+
+# 시드 데이터 (필요시)
+echo "Loading seed data..."
+bundle exec rails db:seed
 
 echo "Starting Rails server..."
 exec "$@"
+EOF < /dev/null

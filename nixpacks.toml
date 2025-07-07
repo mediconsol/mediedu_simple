@@ -1,13 +1,15 @@
-[phases.setup]
-nixPkgs = ['nodejs', 'yarn']
+[variables]
+NIXPACKS_METADATA = "ruby"
 
-[phases.install]
-cmds = ['bundle install']
+[phases.setup]
+nixPkgs = ["ruby_3_2", "nodejs", "yarn"]
 
 [phases.build]
 cmds = [
-  'bundle exec rails assets:precompile'
+  "bundle install",
+  "bundle exec rails assets:precompile"
 ]
 
-[start]
-cmd = 'bundle exec puma -C config/puma.rb'
+[phases.start]
+cmd = "./bin/railway-entrypoint rails server -p $PORT -e production"
+EOF < /dev/null
