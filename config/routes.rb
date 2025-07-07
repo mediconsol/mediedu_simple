@@ -21,6 +21,9 @@ Rails.application.routes.draw do
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
   get "health" => "rails/health#show"
+  
+  # Simple ping endpoint for Railway
+  get "ping", to: proc { [200, {}, ["pong"]] }
 
   # PWA routes (optional)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
