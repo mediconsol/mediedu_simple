@@ -2,14 +2,15 @@
 NIXPACKS_METADATA = "ruby"
 
 [phases.setup]
-nixPkgs = ["ruby_3_2", "nodejs", "yarn"]
+nixPkgs = ["ruby_3_2", "nodejs", "yarn", "postgresql"]
+
+[phases.install]
+cmds = ["bundle install --without development test"]
 
 [phases.build]
 cmds = [
-  "bundle install",
   "bundle exec rails assets:precompile"
 ]
 
 [phases.start]
-cmd = "./bin/railway-entrypoint rails server -p $PORT -e production"
-EOF < /dev/null
+cmd = "./bin/railway-entrypoint rails server -b 0.0.0.0 -p $PORT -e production"

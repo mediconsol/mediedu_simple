@@ -2,32 +2,25 @@
 set -e
 
 echo "=== Railway Deployment Started ==="
-echo "DATABASE_URL: ${DATABASE_URL:0:30}..." # 보안상 일부만 출력
 echo "RAILS_ENV: $RAILS_ENV"
 echo "PORT: $PORT"
 
-# 데이터베이스가 있는 경우에만 처리
+# 데이터베이스 설정
 if [ -n "$DATABASE_URL" ]; then
-  echo "🔗 PostgreSQL detected, setting up database..."
+  echo "Setting up PostgreSQL database..."
   
-  # 데이터베이스 연결 대기
-  echo "Waiting for database to be ready..."
-  sleep 5
-  
-  # 데이터베이스 생성 (필요시)
-  echo "Creating database if needed..."
-  bundle exec rails db:create 2>/dev/null || echo "Database already exists"
-  
-  # 마이그레이션 실행
-  echo "Running migrations..."
-  bundle exec rails db:migrate
+  # 간단한 DB 준비
+  rails db:prepare || {
+    echo "DB prepare failed, trying create and migrate..."
+    rails db:create || true
+    rails db:migrate || true
+  }
   
   # 시드 데이터
-  echo "Loading seed data..."
-  bundle exec rails db:seed 2>/dev/null || echo "Seed already loaded"
+  rails db:seed || echo "Seed loading skipped"
 else
-  echo "⚠️  No DATABASE_URL found, using SQLite"
+  echo "Using SQLite database..."
 fi
 
-echo "=== Starting Rails server on port $PORT ==="
+echo "Starting Rails server..."
 exec "$@"
