@@ -21,9 +21,8 @@ test:
   database: storage/test.sqlite3
 
 
-# Production environment - Use PostgreSQL in cloud, SQLite3 locally
+# Production environment - Use PostgreSQL for Render deployment
 production:
-  <% if ENV['DATABASE_URL'].present? && ENV['DATABASE_URL'] != '' %>
   primary:
     url: <%= ENV['DATABASE_URL'] %>
     adapter: postgresql
@@ -55,20 +54,3 @@ production:
     timeout: 5000
     prepared_statements: false
     migrations_paths: db/cable_migrate
-  <% else %>
-  primary:
-    <<: *default
-    database: storage/production.sqlite3
-  cache:
-    <<: *default
-    database: storage/production_cache.sqlite3
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *default
-    database: storage/production_queue.sqlite3
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *default
-    database: storage/production_cable.sqlite3
-    migrations_paths: db/cable_migrate
-  <% end %>

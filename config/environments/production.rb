@@ -13,7 +13,7 @@ Rails.application.configure do
   config.consider_all_requests_local = false
   
   # Enable static file serving for deployment
-  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.public_file_server.enabled = true
 
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true

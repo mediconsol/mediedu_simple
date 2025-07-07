@@ -7,8 +7,8 @@ services:
   - type: web
     name: mediedu-simple
     env: ruby
-    buildCommand: ./bin/render-build.sh
-    startCommand: bundle exec rails server -b 0.0.0.0 -p $PORT -e production
+    buildCommand: bundle install && bundle exec rails assets:precompile && bundle exec rails assets:clean
+    startCommand: bundle exec rails db:create db:migrate db:seed && bundle exec rails server -b 0.0.0.0 -p $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -22,4 +22,3 @@ services:
         value: enabled
       - key: SECRET_KEY_BASE
         generateValue: true
-    autoDeploy: true
